@@ -1,0 +1,28 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
+import {JSDOM} from 'jsdom';
+test('editor supports library insertion, color, animation, drag, resizing and undo',async()=>{
+ const dom=new JSDOM(await readFile(new URL('../web/index.html',import.meta.url),'utf8'),{url:'http://localhost'});
+ const {window}=dom;
+ window.HTMLCanvasElement.prototype.getContext=function(){return new Proxy({canvas:this},{get:(t,k)=>k in t?t[k]:()=>{}})};
+ Object.assign(globalThis,{window,document:window.document,localStorage:window.localStorage,requestAnimationFrame:()=>{},confirm:()=>true});
+ await import('../web/app.js');
+ const $=id=>document.getElementById(id),saved=()=>JSON.parse(localStorage.getItem('mathmotion'));
+ assert.equal($('slides').children.length,1);
+ $('toggle-library').click();assert.equal($('library').hidden,false);
+ $('library-search').value='pi';$('library-search').oninput();assert.equal([...$('tools').children].filter(b=>!b.hidden).length,1);
+ const initial=saved().objects.length;$('add-text').click();assert.equal(saved().objects.length,initial+1);
+ $('palette').children[2].click();assert.equal(saved().objects.at(-1).color,'#83c167');
+ document.querySelector('[data-tab="animate"]').click();document.querySelector('[data-animation="fade"]').click();assert.equal(saved().objects.at(-1).entrance,'fade');
+ $('undo').click();assert.equal(saved().objects.at(-1).entrance,'draw');$('redo').click();assert.equal(saved().objects.at(-1).entrance,'fade');
+ const overlay=$('overlay');overlay.getBoundingClientRect=()=>({left:0,top:0,width:1920,height:1080});overlay.setPointerCapture=()=>{};
+ overlay.onpointerdown({clientX:960,clientY:540,pointerId:1});overlay.onpointermove({clientX:1080,clientY:420});overlay.onpointerup();
+ assert.equal(saved().objects.at(-1).x,1);assert.equal(saved().objects.at(-1).y,1);
+ const before=saved().objects.at(-1);const cx=960+before.x*120,cy=540-before.y*120,w=before.label.length*.2*before.size*120,h=.8*before.size*120;
+ overlay.onpointerdown({clientX:cx+w,clientY:cy+h,pointerId:2});overlay.onpointermove({clientX:cx+w*2,clientY:cy+h*2});overlay.onpointerup();assert.ok(Math.abs(saved().objects.at(-1).size-2)<1e-9);
+ $('undo').click();assert.equal(saved().objects.at(-1).size,1);$('undo').click();assert.equal(saved().objects.at(-1).x,0);
+ document.querySelector('[data-tab="page"]').click();assert.equal($('page-panel').hidden,false);
+ $('scrub').value=3;$('scrub').oninput();$('add-page').click();assert.equal(saved().pages.length,2);assert.equal($('slides').children.length,2);
+ $('undo').click();assert.equal(saved().pages.length,1);
+});

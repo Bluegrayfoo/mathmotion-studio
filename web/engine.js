@@ -1,7 +1,7 @@
 export const TYPES = ['text','circle','vector','curve','rectangle','area','rings','pi'];
 export const CURVES = {sine:x=>Math.sin(x),cosine:x=>Math.cos(x),parabola:x=>x*x/4,cubic:x=>x*x*x/12};
 export const clamp=(v,a=0,b=1)=>Math.max(a,Math.min(b,v));
-export const STYLE={stroke:3,opacity:1,rotation:0,font:'serif',easing:'smooth',fadeOut:0,bars:24,rangeMin:-3,rangeMax:3,endColor:'#83c167',gradient:false,fillOpacity:.65,italic:false,expression:'happy',gazeX:0,gazeY:0,blink:true,bubble:''};
+export const STYLE={stroke:3,opacity:1,rotation:0,font:'serif',easing:'smooth',fadeOut:0,bars:24,rangeMin:-3,rangeMax:3,endColor:'#83c167',gradient:false,fillOpacity:.65,italic:false,entrance:'draw',expression:'happy',gazeX:0,gazeY:0,blink:true,bubble:''};
 export function object(type, extra={}) { return {id:crypto.randomUUID(),type,label:type==='text'?'A beautiful idea':type,color:'#78dcca',x:0,y:0,toX:0,toY:0,size:1,start:0,draw:1.5,end:12,curve:'sine',...STYLE,...extra}; }
 export function sample(o,t){const p=clamp((t-o.start)/Math.max(.1,o.draw));const move=clamp((t-o.start-o.draw)/Math.max(.1,o.end-o.start-o.draw));const ease=o.easing==='linear'?move:o.easing==='ease-in'?move*move:move*move*(3-2*move);return {visible:t>=o.start&&t<=o.end,p,x:o.x+(o.toX-o.x)*ease,y:o.y+(o.toY-o.y)*ease};}
 export const PAGE_STYLE={originX:0,originY:0,ticks:false};
@@ -24,6 +24,7 @@ export function validate(p){
  if(!Number.isFinite(o.rangeMin)||!Number.isFinite(o.rangeMax)||o.rangeMin>=o.rangeMax||Math.abs(o.rangeMin)>20||Math.abs(o.rangeMax)>20||!/^#[0-9a-f]{6}$/i.test(o.endColor)||typeof o.gradient!=='boolean'||typeof o.italic!=='boolean'||!Number.isFinite(o.fillOpacity)||o.fillOpacity<0||o.fillOpacity>1)throw Error('Invalid graph range, gradient, or fill settings.');
  }
  for(const o of objects){if(!['happy','thinking','surprised','sad','talking'].includes(o.expression)||!Number.isFinite(o.gazeX)||Math.abs(o.gazeX)>1||!Number.isFinite(o.gazeY)||Math.abs(o.gazeY)>1||typeof o.blink!=='boolean'||typeof o.bubble!=='string'||o.bubble.length>120)throw Error('Invalid pi character settings.');}
+ for(const o of objects)if(!['draw','fade','none'].includes(o.entrance))throw Error('Invalid entrance animation.');
  const pages=p.pages===undefined?[backgroundPage({grid:!!p.grid,axes:!!p.grid})]:p.pages;
  if(!Array.isArray(pages)||!pages.length||pages.length>100)throw Error('A project needs 1–100 background pages.');
  const pageIds=new Set();
@@ -114,7 +115,7 @@ export function render(ctx,project,time){
  ctx.font=`italic ${S*.3}px Georgia,serif`;ctx.fillText('x',W/2-25,oy-15);ctx.fillText('y',ox+22,-H/2+30);
  }
  }
- for(const o of project.objects){const s=sample(o,time);if(!s.visible||!s.p)continue;ctx.save();ctx.translate(s.x*S,-s.y*S);ctx.strokeStyle=o.color;ctx.fillStyle=o.color;ctx.lineWidth=o.stroke??3;ctx.globalAlpha=(o.opacity??1)*(o.fadeOut?clamp((o.end-time)/o.fadeOut):1);ctx.rotate(-(o.rotation??0)*Math.PI/180);const r=o.size*S;ctx.beginPath();
+ for(const o of project.objects){const s=sample(o,time);if(!s.visible||!s.p)continue;ctx.save();ctx.translate(s.x*S,-s.y*S);if(o.entrance==='fade'){ctx.globalAlpha=s.p;}ctx.strokeStyle=o.color;ctx.fillStyle=o.color;ctx.lineWidth=o.stroke??3;ctx.globalAlpha=(o.entrance==='fade'?s.p:1)*(o.opacity??1)*(o.fadeOut?clamp((o.end-time)/o.fadeOut):1);ctx.rotate(-(o.rotation??0)*Math.PI/180);const r=o.size*S;if(o.entrance==='fade'||o.entrance==='none')s.p=1;ctx.beginPath();
  if(o.type==='pi'){ctx.globalAlpha*=s.p;drawPi(ctx,o,r,time-o.start);}
  if(o.type==='text'){ctx.globalAlpha*=s.p;ctx.font=`${o.italic?'italic ':''}${r*.65}px ${{serif:'Georgia,serif',sans:'Arial,sans-serif',mono:'monospace'}[o.font??'serif']}`;ctx.textAlign='center';o.label.split('\n').forEach((line,index)=>ctx.fillText(line,0,index*r*.8));}
  if(o.type==='circle'){ctx.arc(0,0,r,-Math.PI/2,-Math.PI/2+Math.PI*2*s.p);ctx.stroke();}

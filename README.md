@@ -96,6 +96,20 @@ The inspector adds **Expression** (happy, thinking, surprised, sad, talking), **
 
 To change expression during a scene, duplicate the character, give the copies consecutive appearance/end times, and change the second expression. This is an independently drawn pi presenter, not an imported 3Blue1Brown character asset.
 
+## Presentation-style editor
+
+The editor has a page thumbnail navigator, a canvas, and **Format / Animate / Arrange / Page** inspector tabs. Open **Parts library** to browse or search objects and starter scenes; close it to reclaim space. Objects and starter scenes have separate collapsible sections.
+
+- Click an object on the canvas to select it, then drag to move. Drag the lower-right selection handle to resize. Selection bounds are approximate for text, graphs, and rotated objects.
+- Use arrow keys to nudge by 0.05 units, or Shift + arrows for 0.5 units. Hold Shift while dragging to snap movement to half-units.
+- **Format** offers quick color swatches and object-specific controls.
+- **Animate** offers Draw on, Fade in, Slide in, and Appear presets, plus timing and easing. Slide in moves from two units left to the original position over the remaining object lifetime.
+- **Arrange** lets you edit the whole motion path, its start, or its end, center objects, and change their layer order.
+- Undo/redo works with toolbar buttons or Cmd/Ctrl+Z and Cmd/Ctrl+Shift+Z. History covers the current session, up to 60 edits; it is not included in saved project files.
+- Page thumbnails jump to background pages. Objects still share the project's global timeline.
+
+The selection overlay is separate from the recorded canvas and is excluded from exports. Node and jsdom are development/test dependencies only; the installed app still requires only Python.
+
 ## Privacy and architecture
 
 All assets ship with the app. No accounts, telemetry, external fonts, CDN requests, or cloud render service. The Python standard-library server binds only to `127.0.0.1` and serves an explicit asset allowlist. Project JSON is validated and never executed as code. The canvas renderer and editor run in the browser.
@@ -111,6 +125,7 @@ All assets ship with the app. No accounts, telemetry, external fonts, CDN reques
 Python 3.10+ and Node 22+ (Node is only needed for tests):
 
 ```sh
+npm ci
 node --test tests/*.test.js
 python3 -m unittest discover -s tests
 python3 build.py
