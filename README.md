@@ -135,3 +135,13 @@ python3 build.py
 Tests cover project validation, timing, starter serialization, curve values, relocation of the built executable, asset serving, and rejection of non-asset paths. Browser export requires a manual browser check; it is not covered by these automated tests.
 
 MIT licensed.
+
+## General-purpose controls (v1.6)
+
+The parts library adds lines, ellipses, triangles, polygons (3–32 sides), stars, arcs and dots. Shapes support fill color and outlines; objects share solid/dashed/dotted strokes, independent width/height stretch, opacity, visibility and canvas locking. Text adds bold, alignment and line spacing. Grow and Spin join the existing entrance presets.
+
+In **Animate → Keyframe animation**, capture a pose at the playhead, then edit its time, x/y, size, rotation, opacity and color in the visual pose table. Add further poses at other times. Keyframes override the object's simple movement path and interpolate between poses; before the first pose and after the last, its pose is held. Clear keyframes to restore the simple path. The JSON editor is available under Advanced JSON.
+
+The export toolbar offers 720p, 1080p or 4K and requested 24/30/60 fps. Recording still runs in real time; achievable frame rate depends on the browser and computer.
+
+The editor remains a 2D system. Arbitrary formulas, LaTeX layout, image/audio imports, 3D, object grouping, and slide reordering are not yet implemented. Pages currently control timed backgrounds rather than owning independent object lists.

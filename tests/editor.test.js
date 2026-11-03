@@ -22,6 +22,7 @@ test('editor supports library insertion, color, animation, drag, resizing and un
  const before=saved().objects.at(-1);const cx=960+before.x*120,cy=540-before.y*120,w=before.label.length*.2*before.size*120,h=.8*before.size*120;
  overlay.onpointerdown({clientX:cx+w,clientY:cy+h,pointerId:2});overlay.onpointermove({clientX:cx+w*2,clientY:cy+h*2});overlay.onpointerup();assert.ok(Math.abs(saved().objects.at(-1).size-2)<1e-9);
  $('undo').click();assert.equal(saved().objects.at(-1).size,1);$('undo').click();assert.equal(saved().objects.at(-1).x,0);
+ document.querySelector('[data-tab="animate"]').click();$('capture-keyframe').click();assert.equal($('keyframe-rows').children.length,1);const xInput=document.querySelector('[aria-label="Pose 1 x"]');xInput.value=3;xInput.onchange();assert.equal(saved().objects[0].keyframes[0].x,3);
  document.querySelector('[data-tab="page"]').click();assert.equal($('page-panel').hidden,false);
  $('scrub').value=3;$('scrub').oninput();$('add-page').click();assert.equal(saved().pages.length,2);assert.equal($('slides').children.length,2);
  $('undo').click();assert.equal(saved().pages.length,1);

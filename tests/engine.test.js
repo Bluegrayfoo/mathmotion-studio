@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {template,validate,object,sample,CURVES,backgroundPage,pageAt,render,mixColor,eyeOpen,bubbleLines} from '../web/engine.js';
+import {TYPES,template,validate,object,sample,CURVES,backgroundPage,pageAt,render,mixColor,eyeOpen,bubbleLines} from '../web/engine.js';
 test('all starter projects are valid and round trip',()=>{for(const name of ['Sine, from a circle','Vectors in motion','The shape of a function','Area under a curve','A circle made of rings','Meet your pi presenter']){const p=template(name);assert.deepEqual(validate(JSON.parse(JSON.stringify(p))),p);}});
 // Compare stable fields separately because IDs are generated for each scene.
 test('timing interpolates endpoints and hides out-of-range objects',()=>{const o=object('circle',{x:1,toX:5,start:2,draw:2,end:8});assert.equal(sample(o,1).visible,false);assert.equal(sample(o,2).p,0);assert.equal(sample(o,4).x,1);assert.equal(sample(o,8).x,5);assert.equal(sample(o,9).visible,false);assert.equal(sample(o,6).x,3);});
@@ -86,4 +86,15 @@ test('pi expressions and bubbles render through the shared export renderer',()=>
  const p=template('Meet your pi presenter');p.objects=[p.objects[1]];
  for(const expression of ['happy','thinking','surprised','sad','talking']){p.objects[0].expression=expression;render(ctx,p,2);}
  assert.ok(labels.includes('What happens if we look a'));
+});
+
+test('keyframes animate transforms, opacity and color across all object types',()=>{
+ for(const type of TYPES){const o=object(type,{easing:'linear',keyframes:[{time:0,x:0,y:0,size:1,rotation:0,opacity:1,color:'#000000'},{time:4,x:4,y:2,size:2,rotation:90,opacity:0,color:'#ffffff'}]});const p=template('Vectors in motion');p.objects=[o];validate(p);const s=sample(o,2);assert.equal(s.x,2);assert.equal(s.size,1.5);assert.equal(s.rotation,45);assert.equal(s.opacity,.5);assert.equal(s.color,'#808080');assert.equal(sample(o,6).x,4);}
+});
+test('malformed keyframes and shape options reject',()=>{
+ for(const change of [o=>o.keyframes=[{time:0}],o=>o.scaleX=0,o=>o.sides=2,o=>o.fillColor='bad',o=>o.dash='bad',o=>o.align='bad']){const p=template('Vectors in motion');change(p.objects[0]);assert.throws(()=>validate(p));}
+});
+test('all library types render with fills and alternate entrances',()=>{
+ const ctx=new Proxy({canvas:{width:1920,height:1080}},{get:(t,k)=>k in t?t[k]:()=>{}});
+ for(const type of TYPES)for(const entrance of ['draw','fade','grow','spin','none']){const p=template('Vectors in motion');p.objects=[object(type,{entrance,fill:true,dash:'dashed'})];validate(p);render(ctx,p,2);}
 });
