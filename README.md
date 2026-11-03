@@ -53,7 +53,7 @@ Export uses the browser's MediaRecorder and canvas capture at a requested 30 fps
 ffmpeg -i your-video.webm -c:v libx264 -pix_fmt yuv420p your-video.mp4
 ```
 
-This first version supports 2D scenes, six object types, four preset curves, and up to 100 objects / 120 seconds per project. It does not yet support arbitrary formulas, LaTeX typesetting, 3D, voiceover, or Manim Python imports. The starter scenes illustrate the primitives; the circle scene does not simulate a rotating point driving the sine wave.
+This first version supports 2D scenes, seven object types, four preset curves, and up to 100 objects / 120 seconds per project. It does not yet support arbitrary formulas, LaTeX typesetting, 3D, voiceover, or Manim Python imports. The starter scenes illustrate the primitives; the circle scene does not simulate a rotating point driving the sine wave.
 
 ## Per-page backgrounds
 
@@ -75,6 +75,18 @@ The inspector includes line width, opacity, rotation, fade-out duration, and mov
 Choose **Area under a curve** for a black canvas, white serif heading, cyan curve, green rectangles, and yellow mathematical annotation. The visual direction draws from the thumbnail and official lesson for [The Essence of Calculus](https://www.3blue1brown.com/lessons/essence-of-calculus/); it is an original preset, not a reproduction of the video.
 
 **Apply classic math style** changes only the current page to a black background with gray axes and no grid. **Show axes** and **Show grid** are independent, so a title page can have neither and a graph page can have axes without a full grid. Object colors are set individually. Turn off axes as well as the grid for a completely plain title background.
+
+## Refinements from the supplied calculus clip
+
+The calculus starters now use off-center numbered axes, thin curves, and blue-to-green diagrams on a black background. These controls are editable:
+
+- **Axis origin X/Y** moves the axes independently of scene objects; **Axis numbers** adds unit ticks, labels, and x/y labels. Position graph objects at the same origin to align them.
+- **Graph X min/max** sets the domain for curves and area rectangles.
+- **Color gradient**, **End color**, and **Fill opacity** control area rectangles and concentric rings.
+- **A circle made of rings** is a new starter. Its **rings** object has an editable ring count and progressively reveals from the center outward.
+- Text accepts multiple lines and an **Italic text** setting for mathematical labels.
+
+These are original diagrams inspired by the supplied reference. The app does not include the reference video or extracted frames. Rings currently reveal as concentric bands; they do not morph into rectangles. Text still uses browser fonts rather than LaTeX typesetting.
 
 ## Privacy and architecture
 
