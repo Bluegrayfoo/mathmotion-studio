@@ -53,7 +53,28 @@ Export uses the browser's MediaRecorder and canvas capture at a requested 30 fps
 ffmpeg -i your-video.webm -c:v libx264 -pix_fmt yuv420p your-video.mp4
 ```
 
-This first version supports 2D scenes, five object types, four preset curves, and up to 100 objects / 120 seconds per project. It does not yet support arbitrary formulas, LaTeX typesetting, 3D, voiceover, or Manim Python imports. The starter scenes illustrate the primitives; the circle scene does not simulate a rotating point driving the sine wave.
+This first version supports 2D scenes, six object types, four preset curves, and up to 100 objects / 120 seconds per project. It does not yet support arbitrary formulas, LaTeX typesetting, 3D, voiceover, or Manim Python imports. The starter scenes illustrate the primitives; the circle scene does not simulate a rotating point driving the sine wave.
+
+## Per-page backgrounds
+
+Use **Background pages** to give a title screen and the rest of a video different backgrounds:
+
+1. Select Page 1, turn off **Show grid**, and choose a background color.
+2. Scrub to where the next page should start (for example, 3 seconds).
+3. Click **+ Page here**. The new page initially copies the preceding background.
+4. Turn its grid on or choose different background, grid-line, and axis colors.
+
+Each page lasts until the next page starts, or the end of the video. The page selector jumps to its start. Rename pages, edit their start times without crossing adjacent pages, or delete pages with **Delete page**. The first page always begins at zero. If you shorten the video, first move or delete pages beyond the new duration.
+
+Pages control backgrounds; object appearance and disappearance still use the shared video timeline. Background settings are included in saved projects, autosaves, preview, and video exports. Older projects automatically become a single background page with their existing grid setting.
+
+## Object styling and calculus scenes
+
+The inspector includes line width, opacity, rotation, fade-out duration, and movement easing (smooth, linear, or ease-in). Text supports serif, sans-serif, and monospace typefaces. The new **area** object draws midpoint rectangles under the selected curve, with an editable rectangle count (2–100).
+
+Choose **Area under a curve** for a black canvas, white serif heading, cyan curve, green rectangles, and yellow mathematical annotation. The visual direction draws from the thumbnail and official lesson for [The Essence of Calculus](https://www.3blue1brown.com/lessons/essence-of-calculus/); it is an original preset, not a reproduction of the video.
+
+**Apply classic math style** changes only the current page to a black background with gray axes and no grid. **Show axes** and **Show grid** are independent, so a title page can have neither and a graph page can have axes without a full grid. Object colors are set individually. Turn off axes as well as the grid for a completely plain title background.
 
 ## Privacy and architecture
 
