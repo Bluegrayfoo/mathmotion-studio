@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tlib version="1">
+  <package name="mathmotion-studio" version="1.0.0">
+    <requires><tool name="python3"/></requires>
+    <commands><command name="mathmotion" build="python3 build.py" output="dist/mathmotion"/></commands>
+  </package>
+</tlib>
