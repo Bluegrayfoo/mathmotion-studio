@@ -53,7 +53,7 @@ Export uses the browser's MediaRecorder and canvas capture at a requested 30 fps
 ffmpeg -i your-video.webm -c:v libx264 -pix_fmt yuv420p your-video.mp4
 ```
 
-This first version supports 2D scenes, seven object types, four preset curves, and up to 100 objects / 120 seconds per project. It does not yet support arbitrary formulas, LaTeX typesetting, 3D, voiceover, or Manim Python imports. The starter scenes illustrate the primitives; the circle scene does not simulate a rotating point driving the sine wave.
+This first version supports 2D scenes, eight object types, four preset curves, and up to 100 objects / 120 seconds per project. It does not yet support arbitrary formulas, LaTeX typesetting, 3D, voiceover, or Manim Python imports. The starter scenes illustrate the primitives; the circle scene does not simulate a rotating point driving the sine wave.
 
 ## Per-page backgrounds
 
@@ -87,6 +87,14 @@ The calculus starters now use off-center numbered axes, thin curves, and blue-to
 - Text accepts multiple lines and an **Italic text** setting for mathematical labels.
 
 These are original diagrams inspired by the supplied reference. The app does not include the reference video or extracted frames. Rings currently reveal as concentric bands; they do not morph into rectangles. Text still uses browser fonts rather than LaTeX typesetting.
+
+## Pi presenters
+
+Click **+ pi** to add an original canvas-drawn pi character, or choose **Meet your pi presenter** for a ready-made scene. Customize its color, size, position and movement using the regular object controls.
+
+The inspector adds **Expression** (happy, thinking, surprised, sad, talking), **Look X/Y** (−1 to 1), **Auto blink**, and a multiline **Speech bubble** (up to 120 characters). Talking animates the mouth; it does not generate speech or synchronize to audio. Blinks and mouth motion use timeline time, so scrubbing and export use the same animation. The bubble stays attached to the character; keep room above and to its right.
+
+To change expression during a scene, duplicate the character, give the copies consecutive appearance/end times, and change the second expression. This is an independently drawn pi presenter, not an imported 3Blue1Brown character asset.
 
 ## Privacy and architecture
 

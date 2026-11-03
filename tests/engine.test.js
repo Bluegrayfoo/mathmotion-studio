@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {template,validate,object,sample,CURVES,backgroundPage,pageAt,render,mixColor} from '../web/engine.js';
-test('all starter projects are valid and round trip',()=>{for(const name of ['Sine, from a circle','Vectors in motion','The shape of a function','Area under a curve','A circle made of rings']){const p=template(name);assert.deepEqual(validate(JSON.parse(JSON.stringify(p))),p);}});
+import {template,validate,object,sample,CURVES,backgroundPage,pageAt,render,mixColor,eyeOpen,bubbleLines} from '../web/engine.js';
+test('all starter projects are valid and round trip',()=>{for(const name of ['Sine, from a circle','Vectors in motion','The shape of a function','Area under a curve','A circle made of rings','Meet your pi presenter']){const p=template(name);assert.deepEqual(validate(JSON.parse(JSON.stringify(p))),p);}});
 // Compare stable fields separately because IDs are generated for each scene.
 test('timing interpolates endpoints and hides out-of-range objects',()=>{const o=object('circle',{x:1,toX:5,start:2,draw:2,end:8});assert.equal(sample(o,1).visible,false);assert.equal(sample(o,2).p,0);assert.equal(sample(o,4).x,1);assert.equal(sample(o,8).x,5);assert.equal(sample(o,9).visible,false);assert.equal(sample(o,6).x,3);});
 test('malformed imports reject invalid coordinates, duplicate IDs and unsupported curves',()=>{for(const mutate of [p=>p.duration=Infinity,p=>p.objects[0].x='bad',p=>p.objects.push(p.objects[0]),p=>p.objects[0].curve='__proto__',p=>p.objects[0].color='red',p=>p.objects[0].size=-1]){const p=template('Vectors in motion');mutate(p);assert.throws(()=>validate(p));}});
@@ -66,4 +66,24 @@ test('rings reveal progressively and multiline labels use separate baselines',()
  const arcs=[],labels=[];const ctx=new Proxy({canvas:{width:1920,height:1080},arc(...args){arcs.push(args)},fillText(...args){labels.push(args)}},{get:(target,key)=>key in target?target[key]:()=>{}});
  render(ctx,p,rings.start+rings.draw/2);assert.equal(arcs.length,5);assert.ok(arcs.every(a=>a[2]>0));
  p.objects=[object('text',{label:'First\nSecond'})];render(ctx,p,2);assert.equal(labels.length,2);assert.equal(labels[0][0],'First');assert.ok(labels[1][2]>labels[0][2]);
+});
+
+test('pi blink is deterministic and can be disabled',()=>{
+ assert.equal(eyeOpen(0),1);assert.equal(eyeOpen(3.85),.06);assert.equal(eyeOpen(7.85),.06);assert.equal(eyeOpen(3.85,false),1);
+});
+test('speech wraps long words and preserves explicit line breaks',()=>{
+ assert.deepEqual(bubbleLines('Hello\nWorld'),['Hello','World']);
+ const lines=bubbleLines('a'.repeat(60));assert.ok(lines.every(line=>line.length<=26));assert.equal(lines.join(''),'a'.repeat(60));
+});
+test('invalid pi settings reject and older objects receive defaults',()=>{
+ for(const [key,value] of [['gazeX',2],['gazeY',NaN],['expression','angry'],['blink',1],['bubble','a'.repeat(121)]]){
+ const p=template('Meet your pi presenter');p.objects[1][key]=value;assert.throws(()=>validate(p));
+ }
+ const p=template('Vectors in motion');delete p.objects[0].expression;assert.equal(validate(p).objects[0].expression,'happy');
+});
+test('pi expressions and bubbles render through the shared export renderer',()=>{
+ const labels=[];const ctx=new Proxy({canvas:{width:1920,height:1080},fillText(text){labels.push(text)}},{get:(target,key)=>key in target?target[key]:()=>{}});
+ const p=template('Meet your pi presenter');p.objects=[p.objects[1]];
+ for(const expression of ['happy','thinking','surprised','sad','talking']){p.objects[0].expression=expression;render(ctx,p,2);}
+ assert.ok(labels.includes('What happens if we look a'));
 });
